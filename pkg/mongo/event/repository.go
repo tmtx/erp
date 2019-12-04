@@ -56,3 +56,28 @@ func (r *mongoRepository) FindOneWithFilter(
 	fmt.Println(filter)
 	return c.FindOne(ctx, filter).Decode(&result)
 }
+
+func (r *mongoRepository) FindAllWithFilter(
+	ctx context.Context,
+	filter event.Filter,
+) ([]event.Event, error) {
+	c := r.client.Database(r.dbName).Collection("events")
+
+	cursor, err := c.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cursor.Close(ctx)
+
+	result := []event.Event{}
+	for cursor.Next(ctx) {
+		e := event.Event{}
+		err = cursor.Decode(&e)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, e)
+	}
+
+	return result, nil
+}

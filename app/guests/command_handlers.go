@@ -9,16 +9,14 @@ import (
 	"github.com/tmtx/erp/pkg/validator"
 )
 
-func (s *Service) Create(p app.CreateGuestParams) (error, *validator.Messages) {
+func (s *Service) Create(p app.CreateGuestParams) (*validator.Messages, error) {
 	if isValid, validatorMessages := ValidateCreateGuest(p); !isValid {
-		return fmt.Errorf("Validation failed"), &validatorMessages
+		return &validatorMessages, fmt.Errorf("Validation failed")
 	}
 
-	p.Id = app.NewUUID()
-
 	ctx := context.Background()
-	return s.EventRepository.Store(
+	return nil, s.EventRepository.Store(
 		ctx,
-		event.New(app.GuestCreated, p),
-	), nil
+		event.NewWithId(app.GuestCreated, p),
+	)
 }

@@ -1,11 +1,18 @@
 package app
 
 import (
-	"github.com/google/uuid"
 	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/event"
 	"github.com/tmtx/erp/pkg/validator"
 )
+
+// TODO: redo
+func init() {
+	// register event types
+	// bus.RegisterMessageParamType(GuestCreated, &CreateGuestParams{})
+	// bus.RegisterMessageParamType(UserCreated, &CreateUserParams{})
+	// bus.RegisterMessageParamType(UserLoggedIn, &LoginUserParams{})
+}
 
 // Commands
 const (
@@ -20,10 +27,6 @@ const (
 	UserLoggedIn bus.MessageKey = "user_logged_in"
 	UserCreated  bus.MessageKey = "user_created"
 )
-
-type UUID struct {
-	uuid.UUID
-}
 
 type Server interface {
 	Start(conn string)
@@ -40,25 +43,23 @@ type CommandSubscriber interface {
 // Services
 
 type GuestService interface {
-	Create(params CreateGuestParams) (error, *validator.Messages)
+	Create(params CreateGuestParams) (*validator.Messages, error)
 }
 
 type UserService interface {
-	Login(params LoginUserParams) (error, *validator.Messages)
+	Login(params LoginUserParams) (*validator.Messages, error)
 }
 
 // Command params
 
 type CreateGuestParams struct {
-	Id    UUID   `bson:"id"`
 	Name  string `bson:"name"`
 	Email string `bson:"email"`
 }
 
 type CreateUserParams struct {
-	Id             UUID
-	Email          string
-	HashedPassword string
+	Email          string `bson:"email"`
+	HashedPassword string `bson:"hashed_password"`
 }
 
 type LoginUserParams struct {
@@ -69,10 +70,6 @@ type LoginUserParams struct {
 // Aggregate
 
 type Aggregate interface {
-	Validate() (error, *validator.Messages)
-	ApplyEvent(e event.Event)
-}
-
-type AggregateRootRepository interface {
-	RestoreAggregateRootById(id UUID) (error, *Aggregate)
+	Validate() (bool, *validator.Messages)
+	ApplyEvent(e *event.Event)
 }

@@ -35,7 +35,7 @@ func (b *messageBus) Listen() {
 
 func (b *messageBus) executeCallbacks(m Message) {
 	for _, cb := range b.callbacks[m.Key] {
-		err, validatorMessages := cb(m.Params)
+		validatorMessages, err := cb(m.Params)
 		b.errorHandler.Handle(err, validatorMessages)
 	}
 }

@@ -7,21 +7,21 @@ import (
 )
 
 type User struct {
-	Id             app.UUID
+	Id             *event.UUID
 	Email          string
 	HashedPassword string
 }
 
-func (u *User) ApplyEvent(e event.Event) {
+func (u *User) ApplyEvent(e *event.Event) {
 	switch e.Key {
 	case app.UserCreated:
 		params := e.Params.(app.CreateGuestParams)
 
 		u.Email = params.Email
-		u.Id = params.Id
+		u.Id = e.EntityId
 	}
 }
 
-func (u *User) Validate() (error, *validator.Messages) {
-	return nil, nil
+func (u *User) Validate() (bool, *validator.Messages) {
+	return false, nil
 }

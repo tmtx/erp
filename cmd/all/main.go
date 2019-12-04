@@ -44,6 +44,7 @@ func main() {
 
 	app.RegisterCommandSubscribers([]app.CommandSubscriber{
 		&guestService,
+		&userService,
 	})
 
 	go commandBus.Listen()

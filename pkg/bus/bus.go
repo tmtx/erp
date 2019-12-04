@@ -12,7 +12,7 @@ type MessageType int
 type Status int
 
 type MessageParams interface{}
-type Callback func(MessageParams) (error, *validator.Messages)
+type Callback func(MessageParams) (*validator.Messages, error)
 
 type TestParams struct {
 	Name string

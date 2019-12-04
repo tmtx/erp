@@ -6,6 +6,6 @@ import (
 )
 
 // TODO: implement
-func ValidateLoginUser(p app.LoginUserParams) (bool, *validator.Messages) {
+func ValidateLoginUser(u *User, p app.LoginUserParams) (bool, *validator.Messages) {
 	return true, nil
 }

@@ -13,17 +13,19 @@ type Service struct {
 }
 
 func New(basicService app.BasicService) Service {
-	return Service{basicService}
+	return Service{
+		basicService,
+	}
 }
 
 func (s *Service) NewRouter() server.Router {
 	return &http.Router{s.CommandBus}
 }
 
-func (s *Service) RegisterCommandSubscribers() {
+func (s *Service) RegisterCommandCallbacks() {
 	s.CommandBus.Subscribe(
-		app.CreateGuest,
-		func(p bus.MessageParams) (error, *validator.Messages) {
+		app.LoginUser,
+		func(p bus.MessageParams) (*validator.Messages, error) {
 			return s.Login(p.(app.LoginUserParams))
 		},
 	)
