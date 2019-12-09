@@ -3,9 +3,58 @@ package users
 import (
 	"github.com/tmtx/erp/app"
 	"github.com/tmtx/erp/pkg/validator"
+	"golang.org/x/crypto/bcrypt"
 )
 
-// TODO: implement
-func ValidateLoginUser(u *User, p app.LoginUserParams) (bool, *validator.Messages) {
-	return true, nil
+type passwordValidator struct {
+	Password       []byte
+	HashedPassword []byte
+}
+
+func ValidateLoginUser(u *User, p app.LoginUserParams) (bool, validator.Messages) {
+	if u == nil {
+		return false, validator.Messages{
+			"email": []validator.Message{
+				validator.Message("User not found"),
+			},
+		}
+	}
+
+	emailValidators := app.EmailValidators(p.Email)
+	emailValidators = append(emailValidators, validator.StringsEqual{
+		u.Email,
+		p.Email,
+	})
+
+	g := validator.Group{
+		"email": emailValidators,
+		"password": []validator.Validator{
+			passwordValidator{
+				HashedPassword: []byte(u.HashedPassword),
+				Password:       []byte(p.Password),
+			},
+		},
+	}
+
+	return validator.ValidateGroup(g)
+}
+
+func ValidateUserInfo(p app.UpdateUserInfoParams) (bool, validator.Messages) {
+	emailValidators := app.EmailValidators(p.Email)
+
+	g := validator.Group{
+		"email":  emailValidators,
+		"userId": []validator.Validator{validator.NonNilValidator{p.UserId}},
+	}
+
+	return validator.ValidateGroup(g)
+}
+
+func (v passwordValidator) Validate() (bool, validator.Message) {
+	err := bcrypt.CompareHashAndPassword(v.HashedPassword, v.Password)
+	if err != nil {
+		return false, validator.Message("Password invalid")
+	}
+
+	return true, validator.Message("")
 }

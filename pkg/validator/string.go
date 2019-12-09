@@ -2,6 +2,7 @@ package validator
 
 import (
 	"fmt"
+	"strings"
 )
 
 type StringNonEmpty struct{ Value string }
@@ -9,6 +10,10 @@ type StringLengthValid struct {
 	Value     string
 	MinLength int
 	MaxLength int
+}
+type StringsEqual struct {
+	Value1 string
+	Value2 string
 }
 
 func (v StringNonEmpty) Validate() (bool, Message) {
@@ -28,4 +33,15 @@ func (v StringLengthValid) Validate() (bool, Message) {
 	}
 
 	return true, ""
+}
+
+func (v StringsEqual) Validate() (bool, Message) {
+	isValid := strings.TrimSpace(v.Value1) == strings.TrimSpace(v.Value2)
+
+	message := Message("")
+	if !isValid {
+		message = Message("String value mismatch")
+	}
+
+	return isValid, message
 }

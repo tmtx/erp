@@ -5,18 +5,16 @@ import (
 	"encoding/gob"
 
 	"github.com/tmtx/erp/pkg/validator"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type MessageKey string
 type MessageType int
 type Status int
 
-type MessageParams interface{}
-type Callback func(MessageParams) (*validator.Messages, error)
+type MessageParams bson.M
 
-type TestParams struct {
-	Name string
-}
+type Callback func(MessageParams) (validator.Messages, error)
 
 type Message struct {
 	Key    MessageKey    `bson:"key"`
@@ -35,16 +33,15 @@ const (
 )
 
 type ErrorHandler interface {
-	Handle(err error, messages *validator.Messages)
+	Handle(err error, messages validator.Messages)
 }
 
 type MessageBus interface {
 	Dispatch(m Message)
+	DispatchSync(m Message) (validator.Messages, error)
 	Subscribe(key MessageKey, cb Callback)
 	Listen()
 }
-
-var typesToRegisterForEncoder []string
 
 func NewCommand(key MessageKey, params MessageParams) Message {
 	return Message{

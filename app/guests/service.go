@@ -23,8 +23,12 @@ func (s *Service) NewRouter() server.Router {
 func (s *Service) RegisterCommandCallbacks() {
 	s.CommandBus.Subscribe(
 		app.CreateGuest,
-		func(p bus.MessageParams) (*validator.Messages, error) {
-			return s.Create(p.(app.CreateGuestParams))
+		func(p bus.MessageParams) (validator.Messages, error) {
+			params := app.CreateGuestParams{
+				Email: p["email"].(string),
+				Name:  p["name"].(string),
+			}
+			return s.Create(params)
 		},
 	)
 }

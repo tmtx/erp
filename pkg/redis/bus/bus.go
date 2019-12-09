@@ -1,8 +1,11 @@
 package bus
 
 import (
+	"fmt"
+
 	"github.com/go-redis/redis"
 	"github.com/tmtx/erp/pkg/bus"
+	"github.com/tmtx/erp/pkg/validator"
 )
 
 type redisBus struct {
@@ -35,6 +38,14 @@ func (b redisBus) Dispatch(m bus.Message) {
 	b.client.Publish(string(m.Key), &m)
 }
 
+func (b redisBus) DispatchSync(m bus.Message) (validator.Messages, error) {
+	if b.subscriptions[m.Key] == nil {
+		return nil, fmt.Errorf("No callbacks registered for key: " + string(m.Key))
+	}
+
+	return b.executeCallbacks(m)
+}
+
 func (b redisBus) Subscribe(key bus.MessageKey, cb bus.Callback) {
 	b.subscriptions[key] = append(b.subscriptions[key], cb)
 }
@@ -60,8 +71,17 @@ func (b redisBus) handleSubscription(key bus.MessageKey) {
 	}
 }
 
-func (b redisBus) executeCallbacks(m bus.Message) {
+func (b redisBus) executeCallbacks(m bus.Message) (validator.Messages, error) {
+	var allMessages validator.Messages
+	var err error
+	var validatorMessages validator.Messages
 	for _, cb := range b.subscriptions[m.Key] {
-		cb(m.Params)
+		validatorMessages, err = cb(m.Params)
+		if err != nil {
+			break
+		}
+		allMessages = validator.MergeMessages(allMessages, validatorMessages)
 	}
+
+	return allMessages, err
 }

@@ -13,35 +13,29 @@ type UUID struct {
 }
 
 type Event struct {
-	bus.Message
-	EntityId *UUID `bson:"entity_id"`
+	Key      bus.MessageKey    `bson:"key"`
+	Params   bus.MessageParams `bson:"params"`
+	EntityId *UUID             `bson:"entity_id"`
 }
 
 type Filter bson.M
 
-func New(key bus.MessageKey, params bus.MessageParams) Event {
-	return Event{
-		bus.Message{
-			Key:    key,
-			Params: params,
-			Type:   bus.EventMessage,
-		},
-		nil,
+func New(key bus.MessageKey, params bus.MessageParams, entityId *UUID) Event {
+	e := Event{
+		key,
+		params,
+		entityId,
 	}
-}
-
-func NewWithId(key bus.MessageKey, params bus.MessageParams) Event {
-	e := New(key, params)
-	e.CreateNewId()
+	e.Params = params
 	return e
 }
 
 type Repository interface {
 	Store(ctx context.Context, e Event) error
-	FindOneWithFilter(ctx context.Context, filter Filter, result *Event) error
+	FindOneWithFilter(ctx context.Context, filter Filter) (Event, error)
 	FindAllWithFilter(ctx context.Context, filter Filter) ([]Event, error)
 }
 
-func (e Event) CreateNewId() {
-	e.EntityId = &UUID{uuid.New()}
+func CreateNewEntityId() *UUID {
+	return &UUID{uuid.New()}
 }

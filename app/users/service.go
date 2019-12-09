@@ -1,6 +1,8 @@
 package users
 
 import (
+	"encoding/gob"
+
 	"github.com/tmtx/erp/app"
 	"github.com/tmtx/erp/app/server"
 	"github.com/tmtx/erp/app/users/http"
@@ -19,14 +21,45 @@ func New(basicService app.BasicService) Service {
 }
 
 func (s *Service) NewRouter() server.Router {
-	return &http.Router{s.CommandBus}
+	// For session serialization
+	gob.Register(User{})
+	return &http.Router{s.CommandBus, s}
 }
 
 func (s *Service) RegisterCommandCallbacks() {
 	s.CommandBus.Subscribe(
 		app.LoginUser,
-		func(p bus.MessageParams) (*validator.Messages, error) {
-			return s.Login(p.(app.LoginUserParams))
+		func(p bus.MessageParams) (validator.Messages, error) {
+			err := app.CheckRequiredMessageParams(
+				p,
+				[]string{"email", "password"},
+			)
+			if err != nil {
+				return validator.Messages{}, err
+			}
+
+			params := app.LoginUserParams{
+				Email:    p["email"].(string),
+				Password: p["password"].(string),
+			}
+			return s.Login(params)
+		},
+	)
+	s.CommandBus.Subscribe(
+		app.UpdateUserInfo,
+		func(p bus.MessageParams) (validator.Messages, error) {
+			err := app.CheckRequiredMessageParams(
+				p,
+				[]string{"email"},
+			)
+			if err != nil {
+				return validator.Messages{}, err
+			}
+
+			params := app.UpdateUserInfoParams{
+				Email: p["email"].(string),
+			}
+			return s.UpdateUserInfo(params)
 		},
 	)
 }

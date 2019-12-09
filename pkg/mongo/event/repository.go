@@ -2,9 +2,9 @@ package event
 
 import (
 	"context"
-	"fmt"
 	"time"
 
+	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/event"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -13,8 +13,9 @@ import (
 )
 
 type mongoRepository struct {
-	client *mongo.Client
-	dbName string
+	client     *mongo.Client
+	dbName     string
+	eventTypes map[bus.MessageKey]interface{}
 }
 
 func NewRepository(options *options.ClientOptions, dbName string) (r event.Repository, err error) {
@@ -24,7 +25,11 @@ func NewRepository(options *options.ClientOptions, dbName string) (r event.Repos
 		err = client.Ping(ctx, readpref.Primary())
 	}
 
-	return &mongoRepository{client, dbName}, err
+	return &mongoRepository{
+		client,
+		dbName,
+		map[bus.MessageKey]interface{}{},
+	}, err
 }
 
 func (r *mongoRepository) Store(ctx context.Context, e event.Event) (err error) {
@@ -35,13 +40,10 @@ func (r *mongoRepository) Store(ctx context.Context, e event.Event) (err error) 
 		{"params", e.Params},
 	})
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
-	fmt.Println(err)
 
 	_, err = c.InsertOne(ctx, b)
-	fmt.Println(err)
 
 	return err
 }
@@ -49,12 +51,13 @@ func (r *mongoRepository) Store(ctx context.Context, e event.Event) (err error) 
 func (r *mongoRepository) FindOneWithFilter(
 	ctx context.Context,
 	filter event.Filter,
-	result *event.Event,
-) error {
+) (event.Event, error) {
 	c := r.client.Database(r.dbName).Collection("events")
 
-	fmt.Println(filter)
-	return c.FindOne(ctx, filter).Decode(&result)
+	e := event.Event{}
+	err := c.FindOne(ctx, filter).Decode(&e)
+
+	return e, err
 }
 
 func (r *mongoRepository) FindAllWithFilter(
@@ -79,5 +82,5 @@ func (r *mongoRepository) FindAllWithFilter(
 		result = append(result, e)
 	}
 
-	return result, nil
+	return result, err
 }

@@ -5,18 +5,26 @@ import (
 	"fmt"
 
 	"github.com/tmtx/erp/app"
+	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/event"
 	"github.com/tmtx/erp/pkg/validator"
 )
 
-func (s *Service) Create(p app.CreateGuestParams) (*validator.Messages, error) {
+func (s *Service) Create(p app.CreateGuestParams) (validator.Messages, error) {
 	if isValid, validatorMessages := ValidateCreateGuest(p); !isValid {
-		return &validatorMessages, fmt.Errorf("Validation failed")
+		return validatorMessages, fmt.Errorf("Validation failed")
 	}
 
 	ctx := context.Background()
+
+	params := bus.MessageParams{
+		"name":  p.Name,
+		"email": p.Email,
+	}
+	event := event.New(app.GuestCreated, params, event.CreateNewEntityId())
+
 	return nil, s.EventRepository.Store(
 		ctx,
-		event.NewWithId(app.GuestCreated, p),
+		event,
 	)
 }

@@ -4,42 +4,51 @@ import (
 	"fmt"
 	"testing"
 	"time"
+
+	"github.com/tmtx/erp/pkg/validator"
 )
 
 type testErrorHandler struct {
-	handle func(err error)
+	err      error
+	messages validator.Messages
 }
 
-func (eh *testErrorHandler) Handle(err error) {
-	if eh.handle != nil {
-		eh.handle(err)
-	}
+func (eh *testErrorHandler) Handle(err error, messages validator.Messages) {
+	eh.err = err
+	eh.messages = messages
 }
 
 // TestErrorHandle tests if error is handled
 func TestErrorHandle(t *testing.T) {
 	var testErrorHandleMessageKey MessageKey = "test_error_handle_message_key"
-	expectedResult := "1234"
-	result := ""
+	expectedErrorMessage := "1234"
 
-	errorHandler := struct {
-		testErrorHandler
-	}{}
-	errorHandler.handle = func(err error) {
-		result = err.Error()
+	v := validator.StringNonEmpty{
+		Value: "",
 	}
 
-	messageBus := NewBasicBus(&errorHandler)
-	messageBus.Subscribe(testErrorHandleMessageKey, func(c Message) error {
-		return fmt.Errorf(expectedResult)
-	})
+	vg := validator.Group{
+		"test": []validator.Validator{v},
+	}
+	eh := testErrorHandler{}
+	messageBus := NewBasicMessageBus(&eh)
+	messageBus.Subscribe(
+		testErrorHandleMessageKey,
+		func(p MessageParams) (validator.Messages, error) {
+			isValid, messages := validator.ValidateGroup(vg)
+			if isValid {
+				t.Errorf("Expected validation to fail")
+			}
+			return messages, fmt.Errorf(expectedErrorMessage)
+		},
+	)
 	messageBus.Listen()
 
-	messageBus.Dispatch(Message{testErrorHandleMessageKey, MessageParams{}})
+	messageBus.Dispatch(Message{testErrorHandleMessageKey, MessageParams{}, CommandMessage})
 	time.Sleep(time.Millisecond * 5)
 
-	if result != expectedResult {
-		t.Errorf("Expected: '%s',  got: '%s'", expectedResult, result)
+	if eh.err.Error() != expectedErrorMessage {
+		t.Errorf("Expected: '%s',  got: '%s'", expectedErrorMessage, eh.err.Error())
 	}
 }
 
@@ -49,18 +58,22 @@ func TestDispatch(t *testing.T) {
 	expectedResult := 5
 	result := 0
 
-	messageBus := NewBasicBus(&testErrorHandler{})
-	messageBus.RegisterCallback(testDispatchMessageKey, func(c Message) error {
-		result++
-		return nil
-	})
+	messageBus := NewBasicMessageBus(&testErrorHandler{})
+	messageBus.Subscribe(
+		testDispatchMessageKey,
+		func(p MessageParams) (validator.Messages, error) {
+			result++
+			return nil, nil
+		},
+	)
 	messageBus.Listen()
 
-	messageBus.Dispatch(Message{testDispatchMessageKey, MessageParams{}})
-	messageBus.Dispatch(Message{testDispatchMessageKey, MessageParams{}})
-	messageBus.Dispatch(Message{testDispatchMessageKey, MessageParams{}})
-	messageBus.Dispatch(Message{testDispatchMessageKey, MessageParams{}})
-	messageBus.Dispatch(Message{testDispatchMessageKey, MessageParams{}})
+	m := Message{testDispatchMessageKey, MessageParams{}, CommandMessage}
+	messageBus.Dispatch(m)
+	messageBus.Dispatch(m)
+	messageBus.Dispatch(m)
+	messageBus.Dispatch(m)
+	messageBus.Dispatch(m)
 	time.Sleep(time.Millisecond * 5)
 
 	if result != expectedResult {

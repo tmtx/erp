@@ -6,26 +6,20 @@ import (
 	"github.com/tmtx/erp/pkg/validator"
 )
 
-// TODO: redo
-func init() {
-	// register event types
-	// bus.RegisterMessageParamType(GuestCreated, &CreateGuestParams{})
-	// bus.RegisterMessageParamType(UserCreated, &CreateUserParams{})
-	// bus.RegisterMessageParamType(UserLoggedIn, &LoginUserParams{})
-}
-
 // Commands
 const (
-	CreateGuest bus.MessageKey = "create_guest"
-	CreateUser  bus.MessageKey = "create_user"
-	LoginUser   bus.MessageKey = "login_user"
+	CreateGuest    bus.MessageKey = "create_guest"
+	CreateUser     bus.MessageKey = "create_user"
+	LoginUser      bus.MessageKey = "login_user"
+	UpdateUserInfo bus.MessageKey = "update_user_info"
 )
 
 // Events
 const (
-	GuestCreated bus.MessageKey = "guest_created"
-	UserLoggedIn bus.MessageKey = "user_logged_in"
-	UserCreated  bus.MessageKey = "user_created"
+	GuestCreated    bus.MessageKey = "guest_created"
+	UserLoggedIn    bus.MessageKey = "user_logged_in"
+	UserCreated     bus.MessageKey = "user_created"
+	UserInfoUpdated bus.MessageKey = "user_info_updated"
 )
 
 type Server interface {
@@ -47,7 +41,13 @@ type GuestService interface {
 }
 
 type UserService interface {
-	Login(params LoginUserParams) (*validator.Messages, error)
+	Login(params LoginUserParams) (validator.Messages, error)
+	UpdateUserInfo(params UpdateUserInfoParams) (validator.Messages, error)
+	RestoreAggregateRootByEmail(email string) (Aggregate, error)
+}
+
+type SpacesService interface {
+	GetAllAvailable() ([]Aggregate, error)
 }
 
 // Command params
@@ -63,13 +63,18 @@ type CreateUserParams struct {
 }
 
 type LoginUserParams struct {
-	Email          string
-	HashedPassword string
+	Email    string
+	Password string
+}
+
+type UpdateUserInfoParams struct {
+	UserId *event.UUID
+	Email  string
 }
 
 // Aggregate
 
 type Aggregate interface {
 	Validate() (bool, *validator.Messages)
-	ApplyEvent(e *event.Event)
+	ApplyEvent(e event.Event)
 }

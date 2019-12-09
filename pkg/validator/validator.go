@@ -22,3 +22,14 @@ func ValidateGroup(g Group) (bool, Messages) {
 
 	return isValid, messages
 }
+
+func MergeMessages(groupedMessagesParams ...Messages) Messages {
+	totalMessages := Messages{}
+	for _, groupedMessages := range groupedMessagesParams {
+		for key, messages := range groupedMessages {
+			totalMessages[key] = append(totalMessages[key], messages...)
+		}
+	}
+
+	return totalMessages
+}

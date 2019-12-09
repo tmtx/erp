@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/tmtx/erp/app"
 	"github.com/tmtx/erp/pkg/bus"
@@ -10,67 +9,38 @@ import (
 	"github.com/tmtx/erp/pkg/validator"
 )
 
-func (s *Service) Login(p app.LoginUserParams) (*validator.Messages, error) {
-	u, err := s.RestoreAggregateRootByEmail(p.Email)
-	fmt.Println(u)
-	if err != nil {
-		return nil, err
+func (s *Service) Login(p app.LoginUserParams) (validator.Messages, error) {
+	u, _ := s.RestoreAggregateRootByEmail(p.Email)
+	var user *User
+	if u != nil {
+		user = u.(*User)
 	}
 
-	if isValid, validatorMessages := ValidateLoginUser(u, p); !isValid {
-		return validatorMessages, fmt.Errorf("Validation failed")
+	if isValid, validatorMessages := ValidateLoginUser(user, p); !isValid {
+		return validatorMessages, nil
 	}
 
+	params := bus.MessageParams{
+		"email": p.Email,
+	}
+	e := event.New(app.UserLoggedIn, params, nil)
 	return nil, s.EventRepository.Store(
 		context.Background(),
-		event.New(app.UserLoggedIn, p),
+		e,
 	)
 }
 
-func (s *Service) RestoreAggregateRootById(id event.UUID) (*User, error) {
-	targetEvents := []bus.MessageKey{
-		app.UserCreated,
+func (s *Service) UpdateUserInfo(p app.UpdateUserInfoParams) (validator.Messages, error) {
+	if isValid, validatorMessages := ValidateUserInfo(p); !isValid {
+		return validatorMessages, nil
 	}
 
-	events, err := s.EventRepository.FindAllWithFilter(
+	params := bus.MessageParams{
+		"email": p.Email,
+	}
+	e := event.New(app.UserInfoUpdated, params, p.UserId)
+	return nil, s.EventRepository.Store(
 		context.Background(),
-		event.Filter{
-			"key":       event.Filter{"$in": targetEvents},
-			"entity_id": id.String(),
-		},
+		e,
 	)
-
-	if err != nil {
-		return nil, err
-	}
-
-	u := User{}
-	for _, e := range events {
-		u.ApplyEvent(&e)
-	}
-
-	return &u, nil
-}
-
-func (s *Service) RestoreAggregateRootByEmail(email string) (*User, error) {
-	filter := event.Filter{
-		"key":          app.UserCreated,
-		"params.email": email,
-	}
-
-	// Find initial user creation event
-	e := event.New(app.UserCreated, app.CreateUserParams{})
-	err := s.EventRepository.FindOneWithFilter(
-		context.Background(),
-		filter,
-		&e,
-	)
-	if err != nil {
-		return nil, err
-	}
-	if e.EntityId == nil {
-		return nil, fmt.Errorf("Entity id can not be nil")
-	}
-
-	return s.RestoreAggregateRootById(*e.EntityId)
 }
