@@ -19,11 +19,11 @@ func (r *Router) GetPrefix() string {
 
 func (r *Router) Routes() []server.RouteHandler {
 	return []server.RouteHandler{
-		{Path: "/create", Callback: r.CreateEndpoint, Method: http.MethodGet},
+		{Path: "/create", Callback: r.Create, Method: http.MethodGet},
 	}
 }
 
-func (r *Router) CreateEndpoint(c echo.Context) error {
+func (r *Router) Create(c echo.Context) error {
 	params := bus.MessageParams{
 		"name":  "Test",
 		"email": "kf@karlis.dev",

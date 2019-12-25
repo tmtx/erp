@@ -5,18 +5,16 @@ import { Link } from "react-router-dom";
 import HeaderMenu from "./HeaderMenu";
 import ProfileEditForm from "./ProfileEditForm";
 
-interface User {
-  email: string|null;
-}
+import * as types from "./../types";
 
-type Props = { user: User|null } & typeof defaultProps;
+type Props = { user: types.User|null } & typeof defaultProps;
 const defaultProps = {
   user: null,
 }
 const Header = (props: Props) => {
   const [showProfileEdit, setShowProfileEdit] = useState(false);
 
-  const getName = (user: User|null): string|null => {
+  const getName = (user: types.User|null): string|null => {
     if (user) {
       return user.email;
     }

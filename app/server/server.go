@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/gob"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -29,7 +30,11 @@ type Server struct {
 	echo *echo.Echo
 }
 
-// Process is the middleware function.
+type Session struct {
+	Email string `json:"email"`
+	Id    string `json:"id"`
+}
+
 func checkSession(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		sess, _ := session.Get("session", c)
@@ -49,7 +54,9 @@ func New(routers []Router) Server {
 	e := echo.New()
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte("AKssi29hha!o"))))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowCredentials: true,
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 	s := Server{
 		e,
@@ -59,6 +66,9 @@ func New(routers []Router) Server {
 			s.RegisterRouteHandler(rh, r.GetPrefix())
 		}
 	}
+
+	// For session serialization
+	gob.Register(Session{})
 
 	return s
 }

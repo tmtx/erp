@@ -22,12 +22,13 @@ func (r *Router) GetPrefix() string {
 
 func (r *Router) Routes() []server.RouteHandler {
 	return []server.RouteHandler{
-		{Path: "/login", Callback: r.LoginEndpoint, Method: http.MethodPost, Public: true},
+		{Path: "/login", Callback: r.Login, Method: http.MethodPost, Public: true},
 		{Path: "/update", Callback: r.UpdateUserInfoParams, Method: http.MethodPost},
+		{Path: "/me", Callback: r.CurrentUserInfo, Method: http.MethodGet},
 	}
 }
 
-func (r *Router) LoginEndpoint(c echo.Context) error {
+func (r *Router) Login(c echo.Context) error {
 	params, err := server.MessageParamsFromJSONBody(c)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "")
@@ -44,15 +45,14 @@ func (r *Router) LoginEndpoint(c echo.Context) error {
 
 	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
-		Path:     "/users/login",
+		Path:     "/",
 		MaxAge:   86400 * 7,
 		HttpOnly: true,
 	}
-	// fmt.Println(sess.Values)
 
 	user, err := r.Service.RestoreAggregateRootByEmail(params["email"].(string))
 	if sess.Values["user"] == nil && user != nil {
-		sess.Values["user"] = user
+		sess.Values["user"] = r.Service.Session(user)
 		sess.Save(c.Request(), c.Response())
 	}
 
@@ -77,4 +77,22 @@ func (r *Router) UpdateUserInfoParams(c echo.Context) error {
 	}
 
 	return server.SuccessResponse(c)
+}
+
+func (r *Router) CurrentUserInfo(c echo.Context) error {
+	sess, _ := session.Get("session", c)
+	sess.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   86400 * 7,
+		HttpOnly: true,
+	}
+
+	userSession := sess.Values["user"]
+
+	if userSession == nil {
+		return c.NoContent(http.StatusNotFound)
+	}
+
+	return c.JSON(http.StatusOK, userSession)
+
 }

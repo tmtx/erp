@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Pane } from "evergreen-ui";
 import {
   BrowserRouter as Router,
@@ -11,20 +11,28 @@ import LogInBox from "./components/LogInBox";
 import ReservationList from "./components/ReservationList";
 import Header from "./components/Header";
 import CreateReservationForm from "./components/CreateReservationForm";
+import Api from "./Api";
 
-interface User {
-  email: string|null;
-}
+import * as types from "./types";
 
 const App: React.FC = () => {
+  const [currentUser, setCurrentUser] = useState<types.User|null>(null);
 
-  const getCurrentUser = () => {
-    // TODO: get current user session data from /users/current
-    return null;
-  }
+  const getSessionData = () => {
+    Api.get("/users/me")
+      .then( response => {
+        if (response.data && response.data.email && response.data.id) {
+          setCurrentUser({email: response.data.email, id: response.data.id});
+        }
+      });
+  };
+
+  useEffect(() => {
+    getSessionData();
+  }, []);
 
   const privateRoutes = () => {
-    if (!getCurrentUser()) {
+    if (!currentUser) {
       return (
         <Redirect to="/login" />
       );
@@ -32,20 +40,47 @@ const App: React.FC = () => {
 
     return (
       <div>
-        <Route path="/create-reservation">
+        <Route exact path="/create-reservation">
           <CreateReservationForm />
         </Route>
-        <Route path="/">
+        <Route exact path="/">
           <ReservationList />
         </Route>
       </div>
     );
   };
 
+  const loginBox = () => {
+    if (currentUser) {
+      return (
+        <Redirect to="/" />
+      );
+    }
+
+    return (
+      <Pane
+        clearfix
+        justifyContent="center"
+        alignItems="center"
+        width="100%"
+        height="100%"
+        display="flex"
+        flexDirection="column"
+        position="relative"
+      >
+        <LogInBox getSessionData={getSessionData} />
+      </Pane>
+    );
+  }
+
   return (
     <div className="App">
       <Router>
-        <Header />
+        { currentUser ?
+          <Header />
+          :
+          null
+        }
         <Pane
           display="flex"
           marginLeft="auto"
@@ -57,18 +92,7 @@ const App: React.FC = () => {
         >
           <Switch>
             <Route path="/login">
-              <Pane
-                clearfix
-                justifyContent="center"
-                alignItems="center"
-                width="100%"
-                height="100%"
-                display="flex"
-                flexDirection="column"
-                position="relative"
-              >
-                <LogInBox />
-              </Pane>
+              { loginBox() }
             </Route>
             { privateRoutes() }
           </Switch>

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/tmtx/erp/app/server"
 	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/event"
 	"github.com/tmtx/erp/pkg/validator"
@@ -44,6 +45,7 @@ type UserService interface {
 	Login(params LoginUserParams) (validator.Messages, error)
 	UpdateUserInfo(params UpdateUserInfoParams) (validator.Messages, error)
 	RestoreAggregateRootByEmail(email string) (Aggregate, error)
+	Session(sessValues interface{}) server.Session
 }
 
 type SpacesService interface {

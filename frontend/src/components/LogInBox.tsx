@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Pane, Button, Heading, TextInputField } from "evergreen-ui";
 import { Redirect } from "react-router-dom";
+import { Pane, Button, Heading, TextInputField } from "evergreen-ui";
 import API from "./../Api";
 
 // TODO: DRY - see ProfileEditForm
@@ -8,7 +8,8 @@ interface ValidationMessages {
   [index: string]: string;
 };
 
-const LogInBox: React.FC = () => {
+type Props = { getSessionData: () => void };
+const LogInBox = (props: Props) => {
   const emptyMessages: ValidationMessages = {
     email: "",
     password: "",
@@ -23,12 +24,19 @@ const LogInBox: React.FC = () => {
       .then( response => {
         if (response.data && response.data.status === "ok") {
           setValidationMessages(emptyMessages);
+          props.getSessionData();
           setShouldRedirect(true);
         } else if (response.data && response.data.status === "error") {
           setValidationMessages(response.data.errors);
         }
       });
   };
+
+  if (shouldRedirect) {
+    return (
+      <Redirect to="/" />
+    );
+  }
 
   const getValidationMessage = (key: string): string|null => {
     if (!validationMessages[key] || validationMessages[key].length === 0) {
@@ -38,11 +46,11 @@ const LogInBox: React.FC = () => {
     return validationMessages[key];
   };
 
-  if (shouldRedirect) {
-    return (
-      <Redirect to="/" />
-    );
-  }
+  const handleEnter = (e: React.KeyboardEvent) => {
+    if (e.charCode === 13) {
+      submitForm();
+    }
+  };
 
   return (
     <Pane marginTop="15%" display="flex" alignItems="center" flexDirection="column">
@@ -76,6 +84,7 @@ const LogInBox: React.FC = () => {
           }}
           isInvalid={getValidationMessage("email") !== null}
           validationMessage={getValidationMessage("email")}
+          onKeyPress={handleEnter}
         />
         <TextInputField
           marginTop={10}
@@ -96,8 +105,13 @@ const LogInBox: React.FC = () => {
           }}
           isInvalid={getValidationMessage("password") !== null}
           validationMessage={getValidationMessage("password")}
+          onKeyPress={handleEnter}
         />
-        <Button onClick={ () => submitForm() }>Log in</Button>
+        <Button
+          onClick={ () => submitForm() }
+        >
+          Log in
+        </Button>
       </Pane>
     </Pane>
   );

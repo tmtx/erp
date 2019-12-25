@@ -1,8 +1,6 @@
 package users
 
 import (
-	"encoding/gob"
-
 	"github.com/tmtx/erp/app"
 	"github.com/tmtx/erp/app/server"
 	"github.com/tmtx/erp/app/users/http"
@@ -21,8 +19,6 @@ func New(basicService app.BasicService) Service {
 }
 
 func (s *Service) NewRouter() server.Router {
-	// For session serialization
-	gob.Register(User{})
 	return &http.Router{s.CommandBus, s}
 }
 
@@ -62,4 +58,15 @@ func (s *Service) RegisterCommandCallbacks() {
 			return s.UpdateUserInfo(params)
 		},
 	)
+}
+
+func (s *Service) Session(sessValues interface{}) server.Session {
+	if u, ok := sessValues.(*User); ok {
+		return server.Session{
+			Id:    u.Id.String(),
+			Email: u.Email,
+		}
+	}
+
+	return server.Session{}
 }

@@ -18,11 +18,11 @@ func (r *Router) GetPrefix() string {
 
 func (r *Router) Routes() []server.RouteHandler {
 	return []server.RouteHandler{
-		{Path: "/available", Callback: r.GetAvailableEndpoint, Method: http.MethodGet},
+		{Path: "/available", Callback: r.GetAvailable, Method: http.MethodGet},
 	}
 }
 
-func (r *Router) GetAvailableEndpoint(c echo.Context) error {
+func (r *Router) GetAvailable(c echo.Context) error {
 	availableSpaces, err := r.Service.GetAllAvailable()
 	if err != nil {
 		return err
