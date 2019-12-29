@@ -3,7 +3,7 @@ package spaces
 import (
 	"github.com/tmtx/erp/app"
 	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/spaces/http"
+	"github.com/tmtx/erp/app/services/spaces/http"
 )
 
 type Service struct {

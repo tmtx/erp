@@ -5,10 +5,11 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/guests"
 	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/spaces"
-	"github.com/tmtx/erp/app/users"
+	"github.com/tmtx/erp/app/services/guests"
+	"github.com/tmtx/erp/app/services/reservations"
+	"github.com/tmtx/erp/app/services/spaces"
+	"github.com/tmtx/erp/app/services/users"
 	"github.com/tmtx/erp/pkg/mongo/event"
 	redisbus "github.com/tmtx/erp/pkg/redis/bus"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -38,16 +39,19 @@ func main() {
 	guestService := guests.New(basicService)
 	userService := users.New(basicService)
 	spacesService := spaces.New(basicService)
+	reservationsService := reservations.New(basicService)
 
 	s := server.New([]server.Router{
 		guestService.NewRouter(),
 		userService.NewRouter(),
 		spacesService.NewRouter(),
+		reservationsService.NewRouter(),
 	})
 
 	app.RegisterCommandSubscribers([]app.CommandSubscriber{
 		&guestService,
 		&userService,
+		&reservationsService,
 	})
 
 	go commandBus.Listen()

@@ -1,16 +1,12 @@
 import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
 import { Pane, Button, Heading, TextInputField } from "evergreen-ui";
-import API from "./../Api";
-
-// TODO: DRY - see ProfileEditForm
-interface ValidationMessages {
-  [index: string]: string;
-};
+import API from "./../../Api";
+import * as types from "./../../types";
 
 type Props = { getSessionData: () => void };
-const LogInBox = (props: Props) => {
-  const emptyMessages: ValidationMessages = {
+const LogInForm = (props: Props) => {
+  const emptyMessages: types.ValidationMessages = {
     email: "",
     password: "",
   };
@@ -117,4 +113,4 @@ const LogInBox = (props: Props) => {
   );
 }
 
-export default LogInBox;
+export default LogInForm;

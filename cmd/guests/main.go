@@ -5,8 +5,8 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/guests"
 	"github.com/tmtx/erp/app/server"
+	"github.com/tmtx/erp/app/services/guests"
 	"github.com/tmtx/erp/pkg/mongo/event"
 	redisbus "github.com/tmtx/erp/pkg/redis/bus"
 	"go.mongodb.org/mongo-driver/mongo/options"

@@ -6,7 +6,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/tmtx/erp/app"
 	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/users"
+	"github.com/tmtx/erp/app/services/users"
 	"github.com/tmtx/erp/pkg/mongo/event"
 	redisbus "github.com/tmtx/erp/pkg/redis/bus"
 	"go.mongodb.org/mongo-driver/mongo/options"

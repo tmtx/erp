@@ -2,8 +2,8 @@ package guests
 
 import (
 	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/guests/http"
 	"github.com/tmtx/erp/app/server"
+	"github.com/tmtx/erp/app/services/guests/http"
 	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/validator"
 )

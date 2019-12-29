@@ -13,18 +13,20 @@ type UUID struct {
 }
 
 type Event struct {
-	Key      bus.MessageKey    `bson:"key"`
-	Params   bus.MessageParams `bson:"params"`
-	EntityId *UUID             `bson:"entity_id"`
+	Key    bus.MessageKey    `bson:"key"`
+	Params bus.MessageParams `bson:"params"`
+	// TODO: this probably shouldnt be here as events not always will have entity id
+	// TODO: add DomainEvent in app package which includes EntityId maybe?
+	EntityId *UUID `bson:"entity_id"`
 }
 
 type Filter bson.M
 
 func New(key bus.MessageKey, params bus.MessageParams, entityId *UUID) Event {
 	e := Event{
-		key,
-		params,
-		entityId,
+		Key:      key,
+		Params:   params,
+		EntityId: entityId,
 	}
 	e.Params = params
 	return e

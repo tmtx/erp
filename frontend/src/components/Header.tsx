@@ -3,7 +3,7 @@ import { Pane, Avatar, SideSheet, IconButton } from "evergreen-ui";
 import { Link } from "react-router-dom";
 
 import HeaderMenu from "./HeaderMenu";
-import ProfileEditForm from "./ProfileEditForm";
+import ProfileEditForm from "./forms/ProfileEditForm";
 
 import * as types from "./../types";
 

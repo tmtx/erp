@@ -23,6 +23,7 @@ require (
 	github.com/ianlancetaylor/demangle v0.0.0-20181102032728-5e5cf60278f6 // indirect
 	github.com/josharian/impl v0.0.0-20191119165012-6b9658ad00c7 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
+	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo-contrib v0.7.0
 	github.com/labstack/echo/v4 v4.1.7
 	github.com/mattn/go-isatty v0.0.10 // indirect

@@ -2,8 +2,9 @@ package users
 
 import (
 	"github.com/tmtx/erp/app"
+	"github.com/tmtx/erp/app/aggregates"
 	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/users/http"
+	"github.com/tmtx/erp/app/services/users/http"
 	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/validator"
 )
@@ -19,7 +20,7 @@ func New(basicService app.BasicService) Service {
 }
 
 func (s *Service) NewRouter() server.Router {
-	return &http.Router{s.CommandBus, s}
+	return &http.Router{s.CommandBus, s, s.EventRepository}
 }
 
 func (s *Service) RegisterCommandCallbacks() {
@@ -61,7 +62,7 @@ func (s *Service) RegisterCommandCallbacks() {
 }
 
 func (s *Service) Session(sessValues interface{}) server.Session {
-	if u, ok := sessValues.(*User); ok {
+	if u, ok := sessValues.(*aggregates.User); ok {
 		return server.Session{
 			Id:    u.Id.String(),
 			Email: u.Email,

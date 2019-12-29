@@ -2,6 +2,7 @@ package users
 
 import (
 	"github.com/tmtx/erp/app"
+	"github.com/tmtx/erp/app/aggregates"
 	"github.com/tmtx/erp/pkg/validator"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -11,7 +12,7 @@ type passwordValidator struct {
 	HashedPassword []byte
 }
 
-func ValidateLoginUser(u *User, p app.LoginUserParams) (bool, validator.Messages) {
+func ValidateLoginUser(u *aggregates.User, p app.LoginUserParams) (bool, validator.Messages) {
 	if u == nil {
 		return false, validator.Messages{
 			"email": []validator.Message{
@@ -21,10 +22,13 @@ func ValidateLoginUser(u *User, p app.LoginUserParams) (bool, validator.Messages
 	}
 
 	emailValidators := app.EmailValidators(p.Email)
-	emailValidators = append(emailValidators, validator.StringsEqual{
-		u.Email,
-		p.Email,
-	})
+	emailValidators = append(
+		emailValidators,
+		validator.StringsEqual{
+			Value1: u.Email,
+			Value2: p.Email,
+		},
+	)
 
 	g := validator.Group{
 		"email": emailValidators,

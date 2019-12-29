@@ -35,10 +35,14 @@ func NewRepository(options *options.ClientOptions, dbName string) (r event.Repos
 func (r *mongoRepository) Store(ctx context.Context, e event.Event) (err error) {
 	c := r.client.Database(r.dbName).Collection("events")
 
-	b, err := bson.Marshal(bson.D{
+	data := bson.D{
 		{"key", e.Key},
 		{"params", e.Params},
-	})
+	}.Map()
+	if e.EntityId != nil {
+		data["entity_id"] = e.EntityId
+	}
+	b, err := bson.Marshal(data)
 	if err != nil {
 		return err
 	}

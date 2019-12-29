@@ -4,19 +4,25 @@ import (
 	"context"
 
 	"github.com/tmtx/erp/app"
+	"github.com/tmtx/erp/app/aggregates"
 	"github.com/tmtx/erp/pkg/bus"
 	"github.com/tmtx/erp/pkg/event"
 	"github.com/tmtx/erp/pkg/validator"
 )
 
 func (s *Service) Login(p app.LoginUserParams) (validator.Messages, error) {
-	u, _ := s.RestoreAggregateRootByEmail(p.Email)
-	var user *User
-	if u != nil {
-		user = u.(*User)
+	ag := &aggregates.User{
+		Email: p.Email,
+		Base:  aggregates.Base{Repository: s.EventRepository},
 	}
 
-	if isValid, validatorMessages := ValidateLoginUser(user, p); !isValid {
+	restoredAggregate, err := aggregates.RestoreFromEmail(ag, ag.Email)
+	if err != nil {
+		return nil, err
+	}
+	ag = restoredAggregate.(*aggregates.User)
+
+	if isValid, validatorMessages := ValidateLoginUser(ag, p); !isValid {
 		return validatorMessages, nil
 	}
 

@@ -1,13 +1,10 @@
 import React, { useState } from "react";
 import { Pane, Button, TextInputField, toaster } from "evergreen-ui";
-import API from "./../Api";
-
-interface ValidationMessages {
-  [index: string]: string;
-};
+import API from "./../../Api";
+import * as types from "./../../types";
 
 const ProfileEditForm: React.FC = () => {
-  const emptyMessages: ValidationMessages = {
+  const emptyMessages: types.ValidationMessages = {
     email: "",
   };
   const [validationMessages, setValidationMessages] = useState(emptyMessages);

@@ -7,10 +7,10 @@ import {
   Redirect,
 } from "react-router-dom";
 
-import LogInBox from "./components/LogInBox";
+import LogInForm from "./components/forms/LogInForm";
 import ReservationList from "./components/ReservationList";
 import Header from "./components/Header";
-import CreateReservationForm from "./components/CreateReservationForm";
+import CreateReservationForm from "./components/forms/CreateReservationForm";
 import Api from "./Api";
 
 import * as types from "./types";
@@ -22,7 +22,10 @@ const App: React.FC = () => {
     Api.get("/users/me")
       .then( response => {
         if (response.data && response.data.email && response.data.id) {
-          setCurrentUser({email: response.data.email, id: response.data.id});
+          setCurrentUser({
+            email: response.data.email,
+            id: response.data.id
+          });
         }
       });
   };
@@ -39,14 +42,14 @@ const App: React.FC = () => {
     }
 
     return (
-      <div>
+      <Switch>
         <Route exact path="/create-reservation">
           <CreateReservationForm />
         </Route>
         <Route exact path="/">
           <ReservationList />
         </Route>
-      </div>
+      </Switch>
     );
   };
 
@@ -68,7 +71,7 @@ const App: React.FC = () => {
         flexDirection="column"
         position="relative"
       >
-        <LogInBox getSessionData={getSessionData} />
+        <LogInForm getSessionData={getSessionData} />
       </Pane>
     );
   }
