@@ -8,8 +8,8 @@ import (
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 type HandlerFunc echo.HandlerFunc

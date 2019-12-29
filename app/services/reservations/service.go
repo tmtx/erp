@@ -3,11 +3,11 @@ package reservations
 import (
 	"time"
 
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/services/reservations/http"
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/server"
+	"github.com/tmtx/res-sys/app/services/reservations/http"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 type Service struct {

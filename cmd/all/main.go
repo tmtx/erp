@@ -4,14 +4,14 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/services/guests"
-	"github.com/tmtx/erp/app/services/reservations"
-	"github.com/tmtx/erp/app/services/spaces"
-	"github.com/tmtx/erp/app/services/users"
-	"github.com/tmtx/erp/pkg/mongo/event"
-	redisbus "github.com/tmtx/erp/pkg/redis/bus"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/server"
+	"github.com/tmtx/res-sys/app/services/guests"
+	"github.com/tmtx/res-sys/app/services/reservations"
+	"github.com/tmtx/res-sys/app/services/spaces"
+	"github.com/tmtx/res-sys/app/services/users"
+	"github.com/tmtx/res-sys/pkg/mongo/event"
+	redisbus "github.com/tmtx/res-sys/pkg/redis/bus"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 

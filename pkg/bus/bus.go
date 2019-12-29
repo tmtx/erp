@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/gob"
 
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/pkg/validator"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

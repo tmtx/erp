@@ -3,7 +3,7 @@ package bus
 import (
 	"fmt"
 
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 type messageBus struct {

@@ -3,11 +3,11 @@ package users
 import (
 	"context"
 
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/aggregates"
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/event"
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/aggregates"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/event"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 func (s *Service) Login(p app.LoginUserParams) (validator.Messages, error) {

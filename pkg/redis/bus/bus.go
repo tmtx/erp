@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 type redisBus struct {

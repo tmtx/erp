@@ -1,10 +1,10 @@
 package aggregates
 
 import (
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/event"
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/event"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 type Guest struct {

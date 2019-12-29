@@ -1,9 +1,9 @@
 package spaces
 
 import (
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/app/services/spaces/http"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/server"
+	"github.com/tmtx/res-sys/app/services/spaces/http"
 )
 
 type Service struct {

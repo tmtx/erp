@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/pkg/bus"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/server"
+	"github.com/tmtx/res-sys/pkg/bus"
 )
 
 type Router struct {

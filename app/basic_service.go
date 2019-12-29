@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/event"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/event"
 )
 
 type BasicService struct {

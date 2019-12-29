@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/tmtx/erp/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/bus"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/validator"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/validator"
 )
 
 const (

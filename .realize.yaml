@@ -16,8 +16,8 @@ settings:
     force: false
     interval: 0s
 schema:
-- name: erp
-  path: /home/tmtx/projects/erp
+- name: res-sys
+  path: /home/tmtx/projects/res-sys
   commands:
     fmt:
       status: true
@@ -25,10 +25,10 @@ schema:
       status: true
     install:
       status: true
-      method: go build -o /home/tmtx/go/bin/erp github.com/tmtx/erp/cmd/all/...
+      method: go build -o /home/tmtx/go/bin/res-sys github.com/tmtx/res-sys/cmd/all/...
     run:
       status: true
-      method: /home/tmtx/go/bin/erp
+      method: /home/tmtx/go/bin/res-sys
   watcher:
     extensions:
     - go

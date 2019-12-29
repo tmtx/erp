@@ -3,9 +3,9 @@ package reservations
 import (
 	"context"
 
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/aggregates"
-	"github.com/tmtx/erp/pkg/event"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/aggregates"
+	"github.com/tmtx/res-sys/pkg/event"
 )
 
 func (s *Service) GetAll() (result []app.Aggregate, err error) {

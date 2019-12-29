@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/event"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/event"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

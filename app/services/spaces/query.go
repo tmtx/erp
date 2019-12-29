@@ -1,8 +1,8 @@
 package spaces
 
 import (
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/aggregates"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/aggregates"
 )
 
 func (s *Service) GetAllAvailable() ([]app.Aggregate, error) {

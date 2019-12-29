@@ -3,8 +3,8 @@ package aggregates
 import (
 	"context"
 
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/pkg/event"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/pkg/event"
 )
 
 type Base struct {

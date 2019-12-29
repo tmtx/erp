@@ -6,11 +6,11 @@ import (
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
-	"github.com/tmtx/erp/app"
-	"github.com/tmtx/erp/app/aggregates"
-	"github.com/tmtx/erp/app/server"
-	"github.com/tmtx/erp/pkg/bus"
-	"github.com/tmtx/erp/pkg/event"
+	"github.com/tmtx/res-sys/app"
+	"github.com/tmtx/res-sys/app/aggregates"
+	"github.com/tmtx/res-sys/app/server"
+	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/event"
 )
 
 type Router struct {
