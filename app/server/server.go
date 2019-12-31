@@ -50,13 +50,17 @@ func checkSession(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func New(routers []Router) Server {
+func New(routers []Router, cookieStoreSecret, defaultOrigin string) Server {
 	e := echo.New()
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("AKssi29hha!o"))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(cookieStoreSecret))))
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowCredentials: true,
-		AllowOrigins:     []string{"http://localhost:3000"},
-		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowOrigins:     []string{defaultOrigin},
+		AllowHeaders: []string{
+			echo.HeaderOrigin,
+			echo.HeaderContentType,
+			echo.HeaderAccept,
+		},
 	}))
 	s := Server{
 		e,

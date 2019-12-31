@@ -4,6 +4,7 @@ require (
 	github.com/go-redis/redis v6.15.6+incompatible
 	github.com/google/uuid v1.1.1
 	github.com/gorilla/sessions v1.2.0
+	github.com/joho/godotenv v1.3.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo-contrib v0.7.0
 	github.com/labstack/echo/v4 v4.1.7
