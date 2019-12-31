@@ -25,10 +25,10 @@ schema:
       status: true
     install:
       status: true
-      method: go build -o /home/tmtx/go/bin/res-sys github.com/tmtx/res-sys/cmd/all/...
+      method: go build -o build/res-sys github.com/tmtx/res-sys/cmd/all/...
     run:
       status: true
-      method: /home/tmtx/go/bin/res-sys
+      method: build/res-sys
   watcher:
     extensions:
     - go
