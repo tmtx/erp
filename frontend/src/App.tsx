@@ -78,7 +78,7 @@ const App: React.FC = () => {
 
   return (
     <div className="App">
-      <Router>
+      <Router basename={process.env.REACT_APP_BASEURL}>
         { currentUser ?
           <Header />
           :
