@@ -15,6 +15,8 @@ services:
       - 27018:27017
     networks:
       - app-tier
+    volumes:
+      - /data/db:/data/db
   redis:
     image: 'bitnami/redis:latest'
     environment:
