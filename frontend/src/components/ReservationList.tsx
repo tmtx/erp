@@ -11,7 +11,9 @@ const ReservationList: React.FC = () => {
     API.get("/reservations/list")
       .then(response => response.data)
       .then(data => {
-        setReservations(data);
+        if (data) {
+          setReservations(data);
+        }
       })
     ;
   }, []);
