@@ -12,6 +12,7 @@ import ReservationList from "./components/ReservationList";
 import Header from "./components/Header";
 import CreateReservationForm from "./components/forms/CreateReservationForm";
 import Api from "./Api";
+import { UserContext } from "./userContext";
 
 import * as types from "./types";
 
@@ -77,31 +78,33 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="App">
-      <Router basename={process.env.REACT_APP_BASEURL}>
-        { currentUser ?
-          <Header />
-          :
-          null
-        }
-        <Pane
-          display="flex"
-          marginLeft="auto"
-          marginRight="auto"
-          width="1000px"
-          justifyContent="center"
-          position="relative"
-          flexDirection="column"
-        >
-          <Switch>
-            <Route path="/login">
-              { loginBox() }
-            </Route>
-            { privateRoutes() }
-          </Switch>
-        </Pane>
-      </Router>
-    </div>
+    <UserContext.Provider value={currentUser}>
+      <div className="App">
+        <Router basename={process.env.REACT_APP_BASEURL}>
+          { currentUser ?
+              <Header />
+              :
+              null
+          }
+          <Pane
+              display="flex"
+              marginLeft="auto"
+              marginRight="auto"
+              width="1000px"
+              justifyContent="center"
+              position="relative"
+              flexDirection="column"
+          >
+            <Switch>
+              <Route path="/login">
+                { loginBox() }
+              </Route>
+              { privateRoutes() }
+            </Switch>
+          </Pane>
+        </Router>
+      </div>
+    </UserContext.Provider>
   );
 }
 

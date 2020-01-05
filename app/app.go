@@ -103,4 +103,6 @@ type Aggregate interface {
 	GetId() *event.UUID
 	GetRepository() event.Repository
 	GetTargetEvents() []bus.MessageKey
+	SetEvents([]event.Event)
+	GetEvents() []event.Event
 }

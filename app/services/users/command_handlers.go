@@ -2,7 +2,6 @@ package users
 
 import (
 	"context"
-
 	"github.com/tmtx/res-sys/app"
 	"github.com/tmtx/res-sys/app/aggregates"
 	"github.com/tmtx/res-sys/pkg/bus"
@@ -43,6 +42,7 @@ func (s *Service) UpdateUserInfo(p app.UpdateUserInfoParams) (validator.Messages
 
 	params := bus.MessageParams{
 		"email": p.Email,
+		"id":    p.UserId,
 	}
 	e := event.New(app.UserInfoUpdated, params, p.UserId)
 	return nil, s.EventRepository.Store(

@@ -1,11 +1,13 @@
 package users
 
 import (
+	"github.com/google/uuid"
 	"github.com/tmtx/res-sys/app"
 	"github.com/tmtx/res-sys/app/aggregates"
 	"github.com/tmtx/res-sys/app/server"
 	"github.com/tmtx/res-sys/app/services/users/http"
 	"github.com/tmtx/res-sys/pkg/bus"
+	"github.com/tmtx/res-sys/pkg/event"
 	"github.com/tmtx/res-sys/pkg/validator"
 )
 
@@ -47,14 +49,23 @@ func (s *Service) RegisterCommandCallbacks() {
 		func(p bus.MessageParams) (validator.Messages, error) {
 			err := app.CheckRequiredMessageParams(
 				p,
-				[]string{"email"},
+				[]string{"email", "id"},
 			)
 			if err != nil {
 				return validator.Messages{}, err
 			}
 
+			var userId uuid.UUID
+			if id, ok := p["id"].(string); ok {
+				userId, err = uuid.Parse(id)
+				if err != nil {
+					return nil, err
+				}
+			}
+
 			params := app.UpdateUserInfoParams{
-				Email: p["email"].(string),
+				Email:  p["email"].(string),
+				UserId: &event.UUID{UUID: userId},
 			}
 			return s.UpdateUserInfo(params)
 		},

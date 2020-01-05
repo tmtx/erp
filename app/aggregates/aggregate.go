@@ -8,8 +8,10 @@ import (
 )
 
 type Base struct {
-	Id         *event.UUID      `json:"id"`
-	Repository event.Repository `json:"-"`
+	Id                *event.UUID      `json:"id"`
+	Repository        event.Repository `json:"-"`
+	Events            []event.Event
+	AppliedEventCount uint
 }
 
 func (ag *Base) GetId() *event.UUID {
@@ -20,6 +22,14 @@ func (ag *Base) GetRepository() event.Repository {
 	return ag.Repository
 }
 
+func (ag *Base) SetEvents(events []event.Event) {
+	ag.Events = events
+}
+
+func (ag *Base) GetEvents() []event.Event {
+	return ag.Events
+}
+
 func RestoreWithFilter(ag app.Aggregate, filter event.Filter) (app.Aggregate, error) {
 	events, err := ag.GetRepository().FindAllWithFilter(
 		context.Background(),
@@ -28,6 +38,8 @@ func RestoreWithFilter(ag app.Aggregate, filter event.Filter) (app.Aggregate, er
 	if err != nil {
 		return nil, err
 	}
+
+	ag.SetEvents(events)
 
 	for _, e := range events {
 		ag.ApplyEvent(e)
@@ -54,5 +66,14 @@ func RestoreFromEmail(
 		"params.email": email,
 	}
 
-	return RestoreWithFilter(ag, filter)
+	restoredAggregate, err := RestoreWithFilter(ag, filter)
+	if err != nil {
+		return nil, err
+	}
+
+	if restoredAggregate.GetId() != nil {
+		return RestoreFromId(restoredAggregate)
+	}
+
+	return restoredAggregate, err
 }

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Pane, Button, TextInputField, toaster } from "evergreen-ui";
 import API from "./../../Api";
+import { UserContext } from "../../userContext";
 import * as types from "./../../types";
 
 const ProfileEditForm: React.FC = () => {
@@ -9,9 +10,13 @@ const ProfileEditForm: React.FC = () => {
   };
   const [validationMessages, setValidationMessages] = useState(emptyMessages);
   const [email, setEmail] = useState("");
+  const currentUser = useContext(UserContext);
 
   const submitForm = () => {
-    API.post("/users/update", {email: email})
+    API.post("/users/update", {
+      email: email,
+      id: currentUser ? currentUser.id : null,
+    })
       .then( response => {
         if (response.data && response.data.status === "ok") {
           toaster.success("Successfully saved");

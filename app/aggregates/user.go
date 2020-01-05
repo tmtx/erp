@@ -16,7 +16,7 @@ type User struct {
 func (ag *User) GetTargetEvents() []bus.MessageKey {
 	return []bus.MessageKey{
 		app.UserCreated,
-		// app.UserInfoUpdated,
+		app.UserInfoUpdated,
 	}
 }
 
@@ -31,18 +31,33 @@ func (ag *User) HydrateFromParams(params bus.MessageParams) {
 
 func (ag *User) ApplyEvent(e event.Event) {
 	switch e.Key {
-	case app.UserCreated:
-		fallthrough
 	case app.UserInfoUpdated:
+		fallthrough
+	case app.UserCreated:
 		ag.HydrateFromParams(e.Params)
 		if e.EntityId != nil {
 			ag.Id = e.EntityId
 		}
 	}
+	ag.AppliedEventCount += 1
 }
 
 func (ag *User) Validate() (bool, *validator.Messages) {
-	return false, nil
+	if ag.HashedPassword == "" {
+		return false, &validator.Messages{
+			"hashed_password": []validator.Message{
+				"empty password",
+			},
+		}
+	}
+	if ag.AppliedEventCount != uint(len(ag.GetEvents())) {
+		return false, &validator.Messages{
+			"events": []validator.Message{
+				"not all events applied",
+			},
+		}
+	}
+	return true, nil
 }
 
 func (ag *User) CanBeRestored() bool {
@@ -70,7 +85,6 @@ func (ag *User) Restore() error {
 			return err
 		}
 		ag = restoredAggregate.(*User)
-
 	}
 
 	return nil
